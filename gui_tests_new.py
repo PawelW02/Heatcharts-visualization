@@ -3,7 +3,7 @@ import pandas as pd
 import time
 
 
-filepath=r'C:\Users\pawwozni\Downloads\PMB_test.txt'
+filepath=r'.\PMB_test.txt'
 parameter_list = ['SSB_0_N' , 'SSB_0_P', 'SSB_1_N' , 'SSB_1_P', 'SSB_2_N' , 'SSB_2_P', 'SSB_3_N' , 'SSB_3_P', 'SSB_4_N' , 'SSB_4_P']
 
 def get_parameter_list(file_content):
@@ -53,7 +53,7 @@ def create_dataframes(parameter_list, file_content):
         x_axis.sort(key=float)
 
         parameter_df = create_parameter_dataframe(parameter, x_axis, y_axis, df)
-        file_name= parameter + '.csv'
+        file_name= ".\\_results\\" + parameter + ".csv"
         parameter_df.to_csv(file_name)
         print(parameter)
         print(f'table creation took: {time.time() - s} seconds')
