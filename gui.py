@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tkinter import Tk, Label, Button, Entry, filedialog
 import subprocess
+import pandas as pd
 
 class HeatmapGenerator:
     def __init__(self):
@@ -34,7 +35,6 @@ class HeatmapGenerator:
                 file_path = file_paths[file_index]
                 heatmap_data, x_labels, y_labels = self.read_csv_file_with_labels(file_path)
                 title = file_path[-11:-4]
-
                 ax = heatmap_fig.add_subplot(4, 2, i + 1)
                 cax = ax.imshow(heatmap_data, cmap='hot', interpolation='nearest')
                 ax.set_xticks(np.arange(0, len(x_labels), max(1, len(x_labels)//10)))
@@ -43,7 +43,7 @@ class HeatmapGenerator:
                 ax.set_yticklabels([y_labels[j] for j in np.arange(0, len(y_labels), max(1, len(y_labels)//10))])
                 ax.set_xlabel('X Axis')
                 ax.set_ylabel('Y Axis')
-                ax.set_title(title)
+                ax.set_title(f'{title}')
                 heatmap_fig.colorbar(cax, ax=ax)
 
                 max_row_index = np.argmax(np.sum(heatmap_data, axis=1))
@@ -51,9 +51,10 @@ class HeatmapGenerator:
                 
                 ax_line = lineplot_fig.add_subplot(4, 2, i + 1)
                 ax_line.plot(x_labels, max_row_data, marker='x')
+                ax_line.set_ylim([-70, -35])
                 ax_line.set_xlabel('X Axis')
                 ax_line.set_ylabel('Values')
-                ax_line.set_title(f'Line Plot - {title} - Row {max_row_index + 1}')
+                ax_line.set_title(f'Line Plot - {title} for y = {y_labels[max_row_index]}')
             
             heatmap_fig.tight_layout()
             lineplot_fig.tight_layout()
@@ -82,6 +83,15 @@ class HeatmapGenerator:
         file_paths = entry.get().split(", ")
         if file_paths:
             self.generate_heatmaps(file_paths)
+        else:
+            print("Please provide file paths.")
+
+    def merge_csv_files(self):
+        file_paths = entry.get().split(", ")
+        if file_paths:
+            combined_df = pd.concat([pd.read_csv(file) for file in file_paths])
+            combined_df.to_csv("combined_output.csv", index=False)
+            print("Combined CSV file has been created: combined_output.csv")
         else:
             print("Please provide file paths.")
 
@@ -114,5 +124,8 @@ browse_button.pack()
 
 generate_button = Button(root, text="Generate Heatmaps", command=generator.load_and_generate_heatmaps)
 generate_button.pack()
+
+merge_button = Button(root, text="Merge CSV Files", command=generator.merge_csv_files)
+merge_button.pack()
 
 root.mainloop()
